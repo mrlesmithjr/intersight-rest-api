@@ -1,0 +1,5 @@
+-c requirements.txt
+pylint
+pycodestyle
+autopep8
+pep8
