@@ -27,21 +27,28 @@ def cli_args():
 
     apiKeyId: User's API key ID for auth
 
-    claimId: The short lived claim ID to use for claiming
-
-    deviceID: The device ID which will be used for claiming
-
     secretKeyFileName: Path to user's API secret key file
     """
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['physical', 'rackUnits'])
+    parser.add_argument('action', choices=['blades', 'physical', 'rackUnits'])
     parser.add_argument('--secretKeyFileName')
     parser.add_argument('--apiKeyId')
 
     args = parser.parse_args()
 
     return args
+
+
+def blades(**kwargs):
+    """Returns a JSON list of blades"""
+
+    auth = kwargs['auth']
+
+    url = f'{BURL}/compute/Blades'
+    response = requests.request('GET', url, auth=auth)
+
+    print(json.dumps(response.json()))
 
 
 def physical(**kwargs):
@@ -76,7 +83,8 @@ def main():
         api_key_id=args.apiKeyId
     )
 
-    action_lookup = {'rackUnits': rack_units, 'physical': physical}
+    action_lookup = {'blades': blades,
+                     'rackUnits': rack_units, 'physical': physical}
     action = action_lookup[args.action]
 
     action(args=args, auth=auth)
